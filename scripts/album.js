@@ -28,6 +28,21 @@ var albumMarconi = {
      ]
  };
 
+var albumLinkinPark = {
+     title: 'Hybrid Theory',
+     artist: 'Linkin Park',
+     label: 'Warner Bros',
+     year: '2000',
+     albumArtUrl: 'assets/images/album_covers/14.png',
+     songs: [
+         { title: 'Papercut', duration: '3:05' },
+         { title: 'One Step Closer', duration: '2:36' },
+         { title: 'With You', duration: '3:23'},
+         { title: 'Points of Authority', duration: '3:20' },
+         { title: 'Crawling', duration: '3:29'}
+     ]
+ };
+
 var createSongRow = function(songNumber, songName, songLength) {
      var template =
         '<tr class="album-view-song-item">'
@@ -39,6 +54,8 @@ var createSongRow = function(songNumber, songName, songLength) {
  
      return template;
  };
+
+var albumImage = document.getElementsByClassName('album-cover-art')[0];
 
 var setCurrentAlbum = function(album) {
      // #1
@@ -65,4 +82,14 @@ var setCurrentAlbum = function(album) {
  
  window.onload = function() {
      setCurrentAlbum(albumPicasso);
+     
  };
+
+var albums = [albumPicasso, albumMarconi, albumLinkinPark];
+     var index = 0;
+    albumImage.addEventListener('click', function(event){
+            
+            setCurrentAlbum(albums[index]);
+             index++;                  
+            });
+                             
