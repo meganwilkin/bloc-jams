@@ -65,6 +65,11 @@ var setCurrentAlbum = function(album) {
 
 var findParentByClassName = function(element, className) {;
     var parentElement = element.parentElement;
+                                                          
+    // Assignment 13: If parent doesn't exist console log
+    if (parentElement === null) {
+        console.log("No parent found");
+    }
                                                               
     // First check we're not already at the class
     if (element.className == className) {
@@ -74,6 +79,11 @@ var findParentByClassName = function(element, className) {;
     // Now traverse upwards (but also check for condition we haven't found it)
     while (parentElement != null && parentElement.className != className) {
         parentElement = parentElement.parentElement;
+    }
+                                                          
+    // Assignment 13: No parent of that class name exists
+    if (parentElement === null) {
+        console.log("No parent found with that class name");
     }
     
     // Return parentElement (if null then we didn't find it)
