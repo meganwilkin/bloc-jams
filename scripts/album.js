@@ -14,21 +14,19 @@ var clickHandler = function() {
 
 	if (currentlyPlayingSongNumber !== null) {
 		// Revert to song number for currently playing song because user started playing new song.
-		var currentlyPlayingCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+		var currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
 		currentlyPlayingCell.html(currentlyPlayingSongNumber);
 	}
     if (currentlyPlayingSongNumber !== songNumber) {
 		// Switch from Play -> Pause button to indicate new song is playing.
 		$(this).html(pauseButtonTemplate);
-		currentlyPlayingSongNumber = songNumber;
-        currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+		setSong(songNumber);
         updatePlayerBarSong();
 	} else if (currentlyPlayingSongNumber === songNumber) {
 		// Switch from Pause -> Play button to pause currently playing song.
 		$(this).html(playButtonTemplate);
         $('.main-controls .play-pause').html(playerBarPlayButton);
-		currentlyPlayingSongNumber = null;
-        currentSongFromAlbum = null;
+		setSong(null);
 	}
 };
  
@@ -41,7 +39,7 @@ var clickHandler = function() {
         }
      };
      var offHover = function(event) {
-         var songNumberCell = $(this).find('.song-item-number');
+        var songNumberCell = $(this).find('.song-item-number');
         var songNumber = parseInt(songNumberCell.attr('data-song-number'));
 
         if (songNumber !== currentlyPlayingSongNumber) {
@@ -80,7 +78,7 @@ var setCurrentAlbum = function(album) {
      }
  };
 
-var setSong = function(songNumber) {
+var fixedSong = function(songNumber) {
    // Get an array of the songs so we can fire events programatically
    var songs = $('.song-item-number');
     
@@ -93,7 +91,7 @@ var nextSong = function(e) {
   if (currentlyPlayingSongNumber === null) { return; }
   var trackNo = trackIndex(currentAlbum,currentSongFromAlbum);
   var nextSong = (trackNo == currentAlbum.songs.length - 1) ? 0 : trackNo + 1;
-  setSong(nextSong);
+  fixedSong(nextSong);
 };
 
 var previousSong = function(e) {
@@ -101,21 +99,36 @@ var previousSong = function(e) {
   if (currentlyPlayingSongNumber === null) { return;}
   var trackNo = trackIndex(currentAlbum,currentSongFromAlbum);
   var previousSong = (trackNo == 0) ? currentAlbum.songs.length - 1 : trackNo - 1;
-  setSong(previousSong);
+  fixedSong(previousSong);
 };
 
 var playPauseSong = function() {
     // We have not got anything playing - so play the first song
     if (currentlyPlayingSongNumber === null) { 
-        setSong(0); 
+        fixedSong(0); 
     }
     // Fire the click on the currently playing song
     // To fix as icon still there for play/pause not cleared by hover over
     else {
-        setSong(currentlyPlayingSongNumber - 1);
+        fixedSong(currentlyPlayingSongNumber - 1);
     }
     
+};
+
+//new function to setSong
+var setSong = function(songNumber) {
+    currentlyPlayingSongNumber = songNumber;
     
+    if (songNumber !== null) {
+        currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+    } else {
+        currentSongFromAlbum = null;
+    }
+};
+
+var getSongNumberCell = function(number) {
+    // Revert to song number for currently playing song because user started playing new song.
+    return $('.song-item-number[data-song-number="' + number + '"]');
 };
 
  var trackIndex = function(album, song) {
