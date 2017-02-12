@@ -21,6 +21,12 @@ var $playPauseButton = $('.main-controls .play-pause');
 // Function for when we want to play or pause a song
 var clickHandler = function() {
     var songNumber = parseInt($(this).attr('data-song-number'));
+    
+    // Set the slider to correct position for volume
+    var $volumeSeekBar = $('.volume .seek-bar');
+    console.log($volumeSeekBar);
+    updateSeekPercentage($volumeSeekBar,currentVolume/100);
+    
 
     // Reset HTML for the currently playing to song number
 	if (currentlyPlayingSongNumber !== null) {
@@ -226,9 +232,6 @@ var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
 // Method for determining the seek Bar fill ratio
 var setupSeekBars = function() {
      var $seekBars = $('.player-bar .seek-bar');
-    
-    
- 
      $seekBars.click(function(event) {
          // #3
          var offsetX = event.pageX - $(this).offset().left;
@@ -323,6 +326,7 @@ var setVolume = function(volume) {
      if (currentSoundFile) {
          currentSoundFile.setVolume(volume);
      }
+    currentVolume = volume;
  };
 
 
