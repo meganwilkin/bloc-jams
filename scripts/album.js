@@ -103,7 +103,7 @@ var nextSong = function(e) {
   if (currentlyPlayingSongNumber === null) { return; }
   var trackNo = trackIndex(currentAlbum,currentSongFromAlbum);
   var nextSong = (trackNo == currentAlbum.songs.length - 1) ? 0 : trackNo + 1;
-  fixedSong(nextSong);
+  pickSong(nextSong);
 };
 
 // Play the previous song
@@ -113,7 +113,7 @@ var previousSong = function(e) {
   if (currentlyPlayingSongNumber === null) { return;}
   var trackNo = trackIndex(currentAlbum,currentSongFromAlbum);
   var previousSong = (trackNo == 0) ? currentAlbum.songs.length - 1 : trackNo - 1;
-  fixedSong(previousSong);
+  pickSong(previousSong);
 };
 
 
@@ -134,7 +134,7 @@ var skipSong = function(event) {
     }
     
     // Get the new song and fire the event
-    fixedSong(newTrackIndex(offset));
+    pickSong(newTrackIndex(offset));
 };
 
 
@@ -142,12 +142,12 @@ var skipSong = function(event) {
 var playPauseSong = function() {
     // We have not got anything playing - so play the first song
     if (currentlyPlayingSongNumber === null) { 
-        fixedSong(0); 
+        pickSong(0); 
     }
     // Fire the click on the currently playing song
     // To fix as icon still there for play/pause not cleared by hover over
     else {
-        fixedSong(currentlyPlayingSongNumber - 1);
+        pickSong(currentlyPlayingSongNumber - 1);
     } 
 };
 
@@ -215,7 +215,7 @@ var playerBarPauseButton = '<span class="ion-pause"></span>';
  */ 
 
 // Programatically fire the click on the song to avoid code duplcation 
-var fixedSong = function(songNumber) {
+var pickSong = function(songNumber) {
    // Get an array of the songs so we can fire events programatically
    var songs = $('.song-item-number');
     
