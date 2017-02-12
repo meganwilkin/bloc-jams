@@ -118,7 +118,7 @@ var skipSong = function(event) {
 
 
 // Toggle the play/pause
-var playPauseSong = function() {
+var togglePlayFromPlayerBar = function() {
     // We have not got anything playing - so play the first song
     if (currentlyPlayingSongNumber === null) { 
         pickSong(0); 
@@ -300,6 +300,6 @@ $(document).ready(function() {
     setCurrentAlbum(albumPicasso); 
     $previousButton.click(skipSong);
     $nextButton.click(skipSong);
-    $playPauseButton.click(playPauseSong);
+    $playPauseButton.click(togglePlayFromPlayerBar);
 });
      
