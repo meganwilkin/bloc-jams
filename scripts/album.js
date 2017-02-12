@@ -57,6 +57,7 @@ var clickHandler = function() {
 };
 
 // Function for when we hover over a song row
+// Obscolete - refactored into songHoverHandler
 var onHover = function(event) {
         var songNumberCell = $(this).find('.song-item-number');
         var songNumber = parseInt(songNumberCell.attr('data-song-number'));
@@ -67,6 +68,7 @@ var onHover = function(event) {
 };
 
 // Function for when we no longer hover over song row
+// Obscolete - refactored into songHoverHandler
 var offHover = function(event) {
         var songNumberCell = $(this).find('.song-item-number');
         var songNumber = parseInt(songNumberCell.attr('data-song-number'));
@@ -76,7 +78,26 @@ var offHover = function(event) {
         }
 };
 
+// Function to refactor the onHover and offHover into one handler
+var songHoverHandler = function(event) {
+    var songNumberCell = $(this).find('.song-item-number');
+    var songNumber = parseInt(songNumberCell.attr('data-song-number'));
+    
+    // We're not hovering over the current song
+    if (songNumber !== currentlyPlayingSongNumber) {
+        if (event.type == "mouseenter") {
+            // On hover over change to play icon
+            songNumberCell.html(playButtonTemplate);
+        } else {
+            // On hover leave change back to the song number
+            songNumberCell.html(songNumber);
+        }
+    }
+};
+
+
 // Play the next song
+// Obscolete - replaced by skipSong
 var nextSong = function(e) {
   //console.log(e.target.parentElement.className);
   if (currentlyPlayingSongNumber === null) { return; }
@@ -86,6 +107,7 @@ var nextSong = function(e) {
 };
 
 // Play the previous song
+// Obscolete - replaced by skipSong
 var previousSong = function(e) {
   //console.log(e.target.parentElement.className);
   if (currentlyPlayingSongNumber === null) { return;}
@@ -93,6 +115,28 @@ var previousSong = function(e) {
   var previousSong = (trackNo == 0) ? currentAlbum.songs.length - 1 : trackNo - 1;
   fixedSong(previousSong);
 };
+
+
+// Function to refactor previous and next song handlers into on
+var skipSong = function(event) {
+    // Do not do anything if nothing is playing
+    if (currentlyPlayingSongNumber === null) { return; }
+    
+    // Get if we are next or previous
+    var action = event.target.parentElement.className;
+    var offset = 0;
+    
+    // Set the offset based upon the action
+    if (action === 'next') {
+        offset = 1;
+    } else {
+        offset = -1;
+    }
+    
+    // Get the new song and fire the event
+    fixedSong(newTrackIndex(offset));
+};
+
 
 // Toggle the play/pause
 var playPauseSong = function() {
@@ -127,7 +171,8 @@ var createSongRow = function(songNumber, songName, songLength) {
      $row.find('.song-item-number').click(clickHandler);
     
      // #2 Add hover functions to row
-     $row.hover(onHover, offHover);
+     //$row.hover(onHover, offHover);
+     $row.hover(songHoverHandler);
     
      // #3 Return row
      return $row;
@@ -222,6 +267,19 @@ var trackIndex = function(album, song) {
      return album.songs.indexOf(song);
 };
 
+
+// Return new track index based upon offset
+var newTrackIndex = function(offset){
+    var trackNo = trackIndex(currentAlbum,currentSongFromAlbum);
+    var tracks = currentAlbum.songs.length;
+    
+    // Loop around (assumes singular offset)
+    var newTrackIndex = ((trackNo + offset) < 0 ? (tracks - 1) : (trackNo + offset)) % tracks;
+    
+    return newTrackIndex;
+};
+
+
 // Updste the player bar based upon what is playing
 var updatePlayerBarSong = function() {
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -237,8 +295,10 @@ var updatePlayerBarSong = function() {
 
 $(document).ready(function() {
     setCurrentAlbum(albumPicasso); 
-    $previousButton.click(previousSong);
-    $nextButton.click(nextSong);
+    //$previousButton.click(previousSong);
+    $previousButton.click(skipSong);
+    //$nextButton.click(nextSong);
+    $nextButton.click(skipSong);
     $playPauseButton.click(playPauseSong);
 });
      
