@@ -21,12 +21,28 @@ var clickHandler = function() {
 		// Switch from Play -> Pause button to indicate new song is playing.
 		$(this).html(pauseButtonTemplate);
 		setSong(songNumber);
+        // Need to play the currentSoundFile here!
+        currentSoundFile.play();
         updatePlayerBarSong();
 	} else if (currentlyPlayingSongNumber === songNumber) {
 		// Switch from Pause -> Play button to pause currently playing song.
 		$(this).html(playButtonTemplate);
         $('.main-controls .play-pause').html(playerBarPlayButton);
-		setSong(null);
+		// Need to get rid of setSong null replace with conditional statement to check if currentSoundFile is paused
+        //setSong(null);
+        if (currentSoundFile.isPaused()) {
+            currentSoundFile.play();
+            // icon in song row to pause
+            // icon in play bar to pause
+            $(this).html(pauseButtonTemplate);
+            $('.main-controls .play-pause').html(playerBarPauseButton);
+        } else {
+            currentSoundFile.pause();
+            // content of song number cell to play
+            //icon in play bar to play
+            $(this).html(playButtonTemplate);
+            $('.main-controls .play-pause').html(playerBarPlayButton);
+        }
 	}
 };
  
@@ -117,14 +133,31 @@ var playPauseSong = function() {
 
 //new function to setSong
 var setSong = function(songNumber) {
-    currentlyPlayingSongNumber = songNumber;
+    if (currentSoundFile) {
+         currentSoundFile.stop();
+     }
+    
+    currentlyPlayingSongNumber = parseInt(songNumber);
     
     if (songNumber !== null) {
         currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
     } else {
         currentSongFromAlbum = null;
     }
+    currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, {
+         // #2
+         formats: [ 'mp3' ],
+         preload: true
+     });
+    
+     setVolume(currentVolume);
 };
+
+var setVolume = function(volume) {
+     if (currentSoundFile) {
+         currentSoundFile.setVolume(volume);
+     }
+ };
 
 var getSongNumberCell = function(number) {
     // Revert to song number for currently playing song because user started playing new song.
@@ -154,6 +187,8 @@ var updatePlayerBarSong = function() {
  var currentAlbum = null;
  var currentlyPlayingSongNumber = null;
  var currentSongFromAlbum = null;
+ var currentSoundFile = null;
+ var currentVolume = 80;
 
  var $previousButton = $('.main-controls .previous');
  var $nextButton = $('.main-controls .next');
