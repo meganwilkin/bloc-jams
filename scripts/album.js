@@ -24,7 +24,6 @@ var clickHandler = function() {
     
     // Set the slider to correct position for volume
     var $volumeSeekBar = $('.volume .seek-bar');
-    console.log($volumeSeekBar);
     updateSeekPercentage($volumeSeekBar,currentVolume/100);
     
 
@@ -143,6 +142,7 @@ var playPauseSong = function() {
 
 // Creates a row for a given song and attaches handlers to it 
 var createSongRow = function(songNumber, songName, songLength) {
+     songLength = filterTimeCode(songLength);
      var template =
         '<tr class="album-view-song-item">'
       + '  <td class="song-item-number" data-song-number="' + songNumber + '">' + songNumber + '</td>'
@@ -211,6 +211,7 @@ var updateSeekBarWhileSongPlays = function() {
              var $seekBar = $('.seek-control .seek-bar');
  
              updateSeekPercentage($seekBar, seekBarFillRatio);
+             setCurrentTimeInPlayerBar(this.getTime());
          });
      }
  };
@@ -329,6 +330,31 @@ var setVolume = function(volume) {
     currentVolume = volume;
  };
 
+// Function to set time in the player bar
+var setCurrentTimeInPlayerBar = function(currentTime) {
+     $('.current-time').html(filterTimeCode(currentTime));
+};
+
+// Function to set time in the player bar
+var setTotalTimeInPlayerBar = function(totalTime) {
+     $('.total-time').html(filterTimeCode(totalTime));
+};
+
+// Function to convert seconds into nicely formatted mins and seconds (assumes no hours...)
+var filterTimeCode = function(timeInSeconds) {
+  // Get the number of seconds as an integer
+  var time = Math.floor(parseFloat(timeInSeconds));
+    
+  var minutes = Math.floor(time / 60);
+  var seconds = time - (minutes * 60);
+  return minutes.toString() + ":" + str_pad_left(seconds,'0',2);
+    
+};
+
+// Function to add leading zero to a time
+function str_pad_left(string,pad,length) {
+    return (new Array(length+1).join(pad)+string).slice(-length);
+}
 
 // Get the table cell relating to the song number 
 var getSongNumberCell = function(number) {
@@ -387,9 +413,7 @@ var updatePlayerBarSong = function() {
     $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + currentAlbum.artist);
     $('.main-controls .play-pause').html(playerBarPauseButton);
     
-    // Need to format time properly...
-    // Can't change the start of the song until we use an event timer
-    $('.seek-control .total-time').html(currentAlbum.songs[trackIndex(currentAlbum,currentSongFromAlbum)].duration);
+    setTotalTimeInPlayerBar(currentAlbum.songs[trackIndex(currentAlbum,currentSongFromAlbum)].duration);
 };
 
 
